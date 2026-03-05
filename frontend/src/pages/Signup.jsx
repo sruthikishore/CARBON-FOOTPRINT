@@ -1,6 +1,8 @@
 import Navbar from "../components/Navbar";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { signupUser } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
     const [formData, setFormData] = useState({
@@ -17,10 +19,25 @@ const Signup = () => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Signup Data:", formData);
+
+        try {
+            const response = await signupUser(formData);
+
+            // Save token
+            localStorage.setItem("user", JSON.stringify(response.data));
+
+            // Redirect
+            navigate("/dashboard");
+
+        } catch (error) {
+            const message = error.response?.data?.detail || "Signup failed";
+            alert(message);
+        }
     };
+
+    const navigate = useNavigate();
 
     return (
         <>

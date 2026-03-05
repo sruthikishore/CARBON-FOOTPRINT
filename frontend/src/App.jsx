@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import ActivityInput from "./pages/ActivityInput";
+import ActivityHistory from "./pages/ActivityHistory";
 import Prediction from "./pages/Prediction";
 import Goals from "./pages/Goals";
 import Suggestions from "./pages/Suggestions";
@@ -55,6 +56,13 @@ function App() {
           element={
             <ProtectedRoute>
               <Suggestions />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/history"
+          element={
+            <ProtectedRoute>
+              <ActivityHistory />
             </ProtectedRoute>
           }
         />

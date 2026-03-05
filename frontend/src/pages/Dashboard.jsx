@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { getDashboard } from "../services/api";
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import {
     PieChart,
@@ -19,6 +21,13 @@ const Dashboard = () => {
 
     const [dashboardData, setDashboardData] = useState(null);
 
+    const [loading, setLoading] = useState(true);
+
+    const navigate = useNavigate();
+
+    const location = useLocation();
+    const successMessage = location.state?.message;
+
     useEffect(() => {
         const fetchDashboard = async () => {
             try {
@@ -26,6 +35,8 @@ const Dashboard = () => {
                 setDashboardData(response.data);
             } catch (error) {
                 console.error("Error fetching dashboard:", error);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -38,12 +49,79 @@ const Dashboard = () => {
 
     const COLORS = ["#16a34a", "#22c55e", "#4ade80", "#86efac"];
 
+    if (loading) {
+        return (
+            <>
+                <Navbar />
+                <div className="min-h-screen flex items-center justify-center bg-green-50">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-green-600"></div>
+                </div>
+            </>
+        );
+    }
+
+    if (totalEmission === 0) {
+        return (
+            <>
+                <Navbar />
+
+                <div className="min-h-screen flex flex-col items-center justify-center bg-green-50">
+                    <h2 className="text-3xl font-bold text-gray-700 mb-4">
+                        No activity yet
+                    </h2>
+
+                    <p className="text-gray-500 mb-6">
+                        Add your lifestyle data to calculate your carbon footprint
+                    </p>
+
+                    <button
+                        onClick={() => navigate("/activity")}
+                        className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700"
+                    >
+                        Add Your Lifestyle Data
+                    </button>
+                </div>
+            </>
+        );
+    }
+
+    if (!dashboardData || dashboardData.total_emission === 0) {
+        return (
+            <>
+                <Navbar />
+
+                <div className="min-h-screen flex flex-col items-center justify-center bg-green-50">
+                    <h2 className="text-3xl font-bold text-gray-700 mb-4">
+                        No activity data yet
+                    </h2>
+
+                    <p className="text-gray-500 mb-6">
+                        Add your lifestyle data to calculate your carbon footprint.
+                    </p>
+
+                    <button
+                        onClick={() => navigate("/activity")}
+                        className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700"
+                    >
+                        Add Your Lifestyle Data
+                    </button>
+                </div>
+            </>
+        );
+    }
+
     return (
         <>
             <Navbar />
 
             <div className="min-h-screen bg-green-50 p-6">
                 <div className="max-w-7xl mx-auto space-y-8">
+
+                    {successMessage && (
+                        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+                            ✅ {successMessage}
+                        </div>
+                    )}
 
                     {/* Category Cards */}
                     <div className="grid md:grid-cols-4 gap-6">

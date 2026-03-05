@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { NavLink } from "react-router-dom";
 
 const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
@@ -18,7 +19,7 @@ const Navbar = () => {
                     CarbonAI
                 </h1>
 
-                <div className="space-x-6">
+                <div className="flex items-center space-x-6">
                     <Link to="/" className="text-gray-700 hover:text-green-600">
                         Home
                     </Link>
@@ -31,15 +32,31 @@ const Navbar = () => {
                             <Link to="/signup" className="text-gray-700 hover:text-green-600">
                                 Signup
                             </Link>
+
                         </>
                     ) : (
                         <>
+                            <Link
+                                to="/activity"
+                                className="text-gray-700 hover:text-green-600"
+                            >
+                                Activity
+                            </Link>
+
+                            <Link
+                                to="/history"
+                                className="text-gray-700 hover:text-green-600"
+                            >
+                                History
+                            </Link>
+
                             <Link
                                 to="/dashboard"
                                 className="text-gray-700 hover:text-green-600"
                             >
                                 Dashboard
                             </Link>
+
                             <button
                                 onClick={handleLogout}
                                 className="text-red-500 hover:text-red-600 font-medium"

@@ -1,3 +1,5 @@
+import { submitActivity } from "../services/api";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { useState } from "react";
 
@@ -13,6 +15,8 @@ const ActivityInput = () => {
         dietType: "",
     });
 
+    const navigate = useNavigate();
+
     const handleChange = (e) => {
         setFormData({
             ...formData,
@@ -20,9 +24,29 @@ const ActivityInput = () => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Activity Data:", formData);
+
+        try {
+            await submitActivity({
+                transport_type: formData.transportType,
+                distance_per_week: Number(formData.distancePerWeek),
+                fuel_type: formData.fuelType,
+                electricity_usage: Number(formData.electricityUsage),
+                flights_per_year: Number(formData.flightsPerYear),
+                shopping_frequency: formData.shoppingFrequency,
+                waste_generated: Number(formData.wasteGenerated),
+                diet_type: formData.dietType
+            });
+
+            navigate("/dashboard", {
+                state: { message: "Activity saved successfully" }
+            });
+
+        } catch (error) {
+            console.error(error);
+            alert(error.response?.data?.detail || "Failed to save activity");
+        }
     };
 
     return (

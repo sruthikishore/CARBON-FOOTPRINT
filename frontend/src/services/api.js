@@ -25,8 +25,10 @@ export const getDashboard = () => API.get("/dashboard/");
 export const getPredictions = () => API.get("/prediction");
 export const setGoal = (data) => API.post("/goals", data);
 export const getGoalProgress = () => API.get("/goal-progress");
-export const getRecommendations = () => API.get("/suggestions");
+//export const getRecommendations = () => API.get("/suggestions");
 export const getActivityHistory = () => API.get("/activity/history");
+export const getSuggestions = (data) =>
+    API.post("/suggestions", data);
 
 API.interceptors.request.use((config) => {
     const token = JSON.parse(localStorage.getItem("user"))?.access_token;

@@ -1,7 +1,7 @@
 from groq import Groq
 import os
 
-client = Groq(api_key="")
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 
 def get_ai_suggestion(user_data, question):

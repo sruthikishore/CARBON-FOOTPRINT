@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app import models, schemas
 from app.auth import get_current_user
+from ml.predict import predict_emission
 
 router = APIRouter()
 
@@ -14,18 +15,18 @@ def create_activity(
     current_user: models.User = Depends(get_current_user)
 ):
 
-    # Basic emission calculation logic (temporary)
-    transport_emission = activity.distance_per_week * 0.2
-    electricity_emission = activity.electricity_usage * 0.5
-    flight_emission = activity.flights_per_year * 50
-    waste_emission = activity.waste_generated * 0.3
+    input_data = {
+    "transport_type": activity.transport_type,
+    "distance_per_week": activity.distance_per_week,
+    "fuel_type": activity.fuel_type,
+    "electricity_usage": activity.electricity_usage,
+    "flights_per_year": activity.flights_per_year,
+    "shopping_frequency": activity.shopping_frequency,
+    "waste_generated": activity.waste_generated,
+    "diet_type": activity.diet_type
+}
 
-    total_emission = (
-        transport_emission
-        + electricity_emission
-        + flight_emission
-        + waste_emission
-    )
+    total_emission = predict_emission(input_data)
 
     new_activity = models.Activity(
         transport_type=activity.transport_type,

@@ -3,6 +3,7 @@ import { getDashboard } from "../services/api";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { getSuggestions } from "../services/api";
 import {
     PieChart,
     Pie,
@@ -23,6 +24,8 @@ const Dashboard = () => {
 
     const [loading, setLoading] = useState(true);
 
+    const [suggestion, setSuggestion] = useState("");
+
     const navigate = useNavigate();
 
     const location = useLocation();
@@ -33,10 +36,30 @@ const Dashboard = () => {
             try {
                 const response = await getDashboard();
                 setDashboardData(response.data);
+
+                await fetchSuggestion();
+
             } catch (error) {
                 console.error("Error fetching dashboard:", error);
             } finally {
                 setLoading(false);
+            }
+        };
+
+        const fetchSuggestion = async () => {
+            try {
+                const res = await getSuggestions({
+                    user_data: {
+                        transport: pieData?.find(item => item.name === "Transport")?.value || 0,
+                        electricity: pieData?.find(item => item.name === "Electricity")?.value || 0
+                    },
+                    question: "How can I reduce my carbon footprint?"
+                });
+
+                setSuggestion(res.data.suggestion);
+
+            } catch (error) {
+                console.error("Suggestion error:", error);
             }
         };
 
@@ -147,6 +170,17 @@ const Dashboard = () => {
 
                     {/* Charts Grid */}
                     <div className="grid md:grid-cols-2 gap-8">
+
+                        {/* AI Suggestions */}
+                        <div className="bg-white shadow-lg rounded-2xl p-6">
+                            <h3 className="text-xl font-semibold text-gray-700 mb-4">
+                                AI Sustainability Suggestions
+                            </h3>
+
+                            <p className="text-gray-600">
+                                {suggestion || "Generating suggestions..."}
+                            </p>
+                        </div>
 
                         {/* Pie Chart */}
                         <div className="bg-white shadow-lg rounded-2xl p-6">

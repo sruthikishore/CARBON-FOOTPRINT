@@ -2,10 +2,10 @@ import pandas as pd
 import joblib
 
 # Load trained model
-model = joblib.load("carbon_model.pkl")
+model = joblib.load("ml/carbon_model.pkl")
 
 # Load feature columns used during training
-model_columns = joblib.load("model_columns.pkl")
+model_columns = joblib.load("ml/model_columns.pkl")
 
 
 def predict_emission(input_data):

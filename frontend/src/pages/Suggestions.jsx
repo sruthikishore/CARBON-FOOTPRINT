@@ -1,21 +1,21 @@
 import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
-import { getRecommendations } from "../services/api";
+import { getSuggestions } from "../services/api";
 
 const Suggestions = () => {
-    const [recommendations, setRecommendations] = useState([]);
+    const [suggestions, setSuggestions] = useState([]);
 
     useEffect(() => {
-        const fetchRecommendations = async () => {
+        const fetchSuggestions = async () => {
             try {
-                const response = await getRecommendations();
-                setRecommendations(response.data);
+                const response = await get();
+                setSuggestions(response.data);
             } catch (error) {
-                console.error("Error fetching recommendations:", error);
+                console.error("Error fetching Suggestions:", error);
             }
         };
 
-        fetchRecommendations();
+        fetchSuggestions();
     }, []);
 
     return (
@@ -30,12 +30,12 @@ const Suggestions = () => {
                     </h2>
 
                     <div className="grid md:grid-cols-2 gap-6">
-                        {recommendations.length === 0 ? (
+                        {suggestions.length === 0 ? (
                             <p className="text-gray-600">
                                 No recommendations available yet.
                             </p>
                         ) : (
-                            recommendations.map((item, index) => (
+                            suggestions.map((item, index) => (
                                 <div
                                     key={index}
                                     className="bg-white shadow-lg rounded-2xl p-6 hover:shadow-xl transition"

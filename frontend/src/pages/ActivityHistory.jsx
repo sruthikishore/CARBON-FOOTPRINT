@@ -54,25 +54,25 @@ const ActivityHistory = () => {
                         >
 
                             <p className="text-gray-500 text-sm mb-2">
-                                📅 {a.created_at ? new Date(a.created_at).toLocaleDateString() : "No Date"}
+                                📅 {a.date ? new Date(a.date).toLocaleDateString() : "No Date"}
                             </p>
 
                             <p className="text-gray-700">
                                 🚗 Transport:
                                 <span className="font-semibold ml-2">
-                                    {a.transport_type}
+                                    {a.transport || 0} km
                                 </span>
                             </p>
 
                             <p className="text-gray-700">
                                 ⚡ Electricity:
                                 <span className="font-semibold ml-2">
-                                    {a.electricity_usage}
+                                    {a.electricity || 0} hrs
                                 </span>
                             </p>
 
                             <p className="text-green-600 font-bold mt-2">
-                                🌍 {a.total_emission} kg CO₂
+                                🌍 {a.emission || 0} kg CO₂
                             </p>
 
                         </div>

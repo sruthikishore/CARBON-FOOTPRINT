@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from app.database import Base
 from sqlalchemy.sql import func
@@ -29,23 +29,30 @@ class Activity(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    transport_type = Column(String(50))
-    distance_per_week = Column(Float)
-    fuel_type = Column(String(50))
+    user_id = Column(Integer, ForeignKey("users.id"))
 
-    electricity_usage = Column(Float)
+    vehicle_type = Column(String(50))
+    vehicle_km_month = Column(Float)
+    flight_frequency = Column(String(50))
 
-    flights_per_year = Column(Integer)
-    shopping_frequency = Column(String(50))
-    waste_generated = Column(Float)
+    energy_source = Column(String(50))
+    energy_efficiency = Column(Boolean)
+    tv_pc_hours = Column(Float)
+    internet_hours = Column(Float)
 
-    diet_type = Column(String(50))
+    diet = Column(String(50))
+    grocery_bill = Column(Float)
+    cooking_method = Column(String(50))
 
-    total_emission = Column(Float)
+    waste_level = Column(String(20))
+    recycling = Column(String(20))
+
+    screen_time = Column(Float)
+    shower_frequency = Column(String(20))
+
+    total_emission = Column(Float, default = 0)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-
-    user_id = Column(Integer, ForeignKey("users.id"))
 
     user = relationship("User", back_populates="activities")
 

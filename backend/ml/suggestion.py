@@ -3,41 +3,25 @@ import os
 
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-
-def get_ai_suggestion(user_data, question):
+def get_ai_suggestion(data, emission):
 
     prompt = f"""
-    A user has the following lifestyle data:
+User carbon footprint is {emission} kg CO2.
 
-    {user_data}
+Transport: {data.get("vehicle_type")} - {data.get("vehicle_km_month")} km/month
+Flights: {data.get("flight_frequency")}
+Energy: {data.get("energy_source")}, efficiency: {data.get("energy_efficiency")}
+Diet: {data.get("diet")}
+Waste: {data.get("waste_level")}, recycling: {data.get("recycling")}
 
-    The user asks: {question}
-
-    Provide practical ways to reduce carbon footprint.
-    """
+Give ONLY 3 short actionable suggestions.
+Each suggestion must be one line.
+No paragraph. No explanation.
+"""
 
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=[
-            {"role": "user", "content": prompt}
-        ]
+        model="llama-3.1-8b-instant",
+        messages=[{"role": "user", "content": prompt}]
     )
 
     return response.choices[0].message.content
-
-
-if __name__ == "__main__":
-
-    user_data = {
-        "Transport": "car",
-        "Vehicle Monthly Distance Km": 300,
-        "Frequency of Traveling by Air": "frequently",
-        "Energy efficiency": "no"
-    }
-
-    question = "How can I reduce transport emissions?"
-
-    result = get_ai_suggestion(user_data, question)
-
-    print("\nAI Suggestion:\n")
-    print(result)

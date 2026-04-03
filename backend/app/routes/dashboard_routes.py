@@ -12,7 +12,6 @@ def get_dashboard(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
-
     activities = db.query(models.Activity).filter(
         models.Activity.user_id == current_user.id
     ).all()
@@ -24,25 +23,43 @@ def get_dashboard(
             "monthlyTrend": []
         }
 
-    total_emission = sum(a.total_emission for a in activities)
+    total_emission = 0
+    transport = 0
+    electricity = 0
+    waste = 0
 
-    # Simple category split (basic logic)
+    for a in activities:
+
+        # 🚗 Transport (simple logic)
+        t = (a.vehicle_km_month or 0) * 0.2
+
+        # ⚡ Electricity
+        e = ((a.tv_pc_hours or 0) + (a.internet_hours or 0)) * 0.1
+
+        # 🗑 Waste
+        w = 5 if a.waste_level == "high" else 2
+
+        total = t + e + w
+
+        total_emission += total
+        transport += t
+        electricity += e
+        waste += w
+
     breakdown = [
-        {"name": "Transport", "value": sum(a.distance_per_week * 0.2 for a in activities)},
-        {"name": "Electricity", "value": sum(a.electricity_usage * 0.5 for a in activities)},
-        {"name": "Flights", "value": sum(a.flights_per_year * 50 for a in activities)},
-        {"name": "Waste", "value": sum(a.waste_generated * 0.3 for a in activities)}
+        {"name": "Transport", "value": round(transport, 2)},
+        {"name": "Electricity", "value": round(electricity, 2)},
+        {"name": "Waste", "value": round(waste, 2)},
     ]
 
-    # Mock monthly trend for now
     monthly_trend = [
-        {"month": "Jan", "emission": total_emission * 0.8},
-        {"month": "Feb", "emission": total_emission * 0.9},
-        {"month": "Mar", "emission": total_emission}
+        {"month": "Jan", "emission": round(total_emission * 0.8, 2)},
+        {"month": "Feb", "emission": round(total_emission * 0.9, 2)},
+        {"month": "Mar", "emission": round(total_emission, 2)},
     ]
 
     return {
-        "totalEmission": total_emission,
+        "totalEmission": round(total_emission, 2),
         "breakdown": breakdown,
         "monthlyTrend": monthly_trend
     }

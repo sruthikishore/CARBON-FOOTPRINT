@@ -9,11 +9,6 @@ import {
     Pie,
     Cell,
     Tooltip,
-    LineChart,
-    Line,
-    XAxis,
-    YAxis,
-    CartesianGrid,
     Legend,
     ResponsiveContainer,
 } from "recharts";
@@ -37,7 +32,9 @@ const Dashboard = () => {
                 const response = await getDashboard();
                 setDashboardData(response.data);
 
-                await fetchSuggestion();
+                if (!suggestion) {
+                    await fetchSuggestion(response.data);
+                }
 
             } catch (error) {
                 console.error("Error fetching dashboard:", error);
@@ -46,18 +43,17 @@ const Dashboard = () => {
             }
         };
 
-        const fetchSuggestion = async () => {
+        const fetchSuggestion = async (data) => {
             try {
                 const res = await getSuggestions({
                     user_data: {
-                        transport: pieData?.find(item => item.name === "Transport")?.value || 0,
-                        electricity: pieData?.find(item => item.name === "Electricity")?.value || 0
+                        transport: data.breakdown?.find(i => i.name === "Transport")?.value || 0,
+                        electricity: data.breakdown?.find(i => i.name === "Electricity")?.value || 0
                     },
                     question: "How can I reduce my carbon footprint?"
                 });
 
                 setSuggestion(res.data.suggestion);
-
             } catch (error) {
                 console.error("Suggestion error:", error);
             }
@@ -68,7 +64,17 @@ const Dashboard = () => {
 
     const totalEmission = dashboardData?.totalEmission || 0;
     const pieData = dashboardData?.breakdown || [];
-    const lineData = dashboardData?.monthlyTrend || [];
+
+    if (!dashboardData) {
+        return (
+            <>
+                <Navbar />
+                <div className="min-h-screen flex items-center justify-center">
+                    <p className="text-gray-500 text-lg">Loading dashboard...</p>
+                </div>
+            </>
+        );
+    }
 
     const COLORS = ["#16a34a", "#22c55e", "#4ade80", "#86efac"];
 
@@ -147,11 +153,11 @@ const Dashboard = () => {
                     )}
 
                     {/* Category Cards */}
-                    <div className="grid md:grid-cols-4 gap-6">
+                    <div className="grid md:grid-cols-3 gap-6">
                         {pieData.map((item, index) => (
                             <div key={index} className="bg-white shadow-md rounded-xl p-4">
                                 <h4 className="text-gray-500 text-sm">{item.name}</h4>
-                                <p className="text-2xl font-bold text-green-600">
+                                <p className="text-4xl font-bold text-green-600">
                                     {item.value} kg
                                 </p>
                             </div>
@@ -173,13 +179,16 @@ const Dashboard = () => {
 
                         {/* AI Suggestions */}
                         <div className="bg-white shadow-lg rounded-2xl p-6">
-                            <h3 className="text-xl font-semibold text-gray-700 mb-4">
-                                AI Sustainability Suggestions
-                            </h3>
+                            <h3>AI Sustainability Suggestions</h3>
 
-                            <p className="text-gray-600">
-                                {suggestion || "Generating suggestions..."}
-                            </p>
+                            <ul className="text-gray-600 list-disc pl-5 space-y-2">
+                                {(suggestion || "")
+                                    .split(/\n|\d+\.\s/)   // split by new line or numbering
+                                    .filter(item => item.trim() !== "")
+                                    .map((item, index) => (
+                                        <li key={index}>{item}</li>
+                                    ))}
+                            </ul>
                         </div>
 
                         {/* Pie Chart */}
@@ -197,7 +206,7 @@ const Dashboard = () => {
                                         outerRadius={100}
                                         label
                                     >
-                                        {pieData.map((entry, index) => (
+                                        {pieData?.map((entry, index) => (
                                             <Cell
                                                 key={`cell-${index}`}
                                                 fill={COLORS[index % COLORS.length]}
@@ -207,29 +216,6 @@ const Dashboard = () => {
                                     <Tooltip />
                                     <Legend />
                                 </PieChart>
-                            </ResponsiveContainer>
-                        </div>
-
-                        {/* Line Chart */}
-                        <div className="bg-white shadow-lg rounded-2xl p-6">
-                            <h3 className="text-xl font-semibold mb-4 text-gray-700">
-                                Monthly Trend
-                            </h3>
-
-                            <ResponsiveContainer width="100%" height={300}>
-                                <LineChart data={lineData}>
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="month" />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Legend />
-                                    <Line
-                                        type="monotone"
-                                        dataKey="emission"
-                                        stroke="#16a34a"
-                                        strokeWidth={3}
-                                    />
-                                </LineChart>
                             </ResponsiveContainer>
                         </div>
 

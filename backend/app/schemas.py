@@ -20,11 +20,21 @@ class Token(BaseModel):
 
     # -------- ACTIVITY SCHEMA --------
 class ActivityCreate(BaseModel):
-    transport_type: str
-    distance_per_week: float
-    fuel_type: str
-    electricity_usage: float
-    flights_per_year: int
-    shopping_frequency: str
-    waste_generated: float
-    diet_type: str
+    vehicle_type: str
+    vehicle_km_month: float
+    flight_frequency: str
+
+    energy_source: str
+    energy_efficiency: bool
+    tv_pc_hours: float
+    internet_hours: float
+
+    diet: str
+    grocery_bill: float
+    cooking_method: str
+
+    waste_level: str
+    recycling: str
+
+    screen_time: float
+    shower_frequency: str

@@ -22,19 +22,18 @@ export const loginUser = (data) => {
 // Future APIs (we will use later)
 export const submitActivity = (data) => API.post("/activity/", data);
 export const getDashboard = () => API.get("/dashboard/");
-export const getPredictions = () => API.get("/prediction");
-export const setGoal = (data) => API.post("/goals", data);
-export const getGoalProgress = () => API.get("/goal-progress");
-//export const getRecommendations = () => API.get("/suggestions");
-export const getActivityHistory = () => API.get("/activity/history");
+export const getPredictions = () => API.get("/prediction/");
+export const setGoal = (data) => API.post("/goals/", data);
+export const getGoalProgress = () => API.get("/goal-progress/");
+export const getActivityHistory = () => API.get("/activity/history/");
 export const getSuggestions = (data) =>
-    API.post("/suggestions", data);
+    API.post("/suggestions/", data);
 
 API.interceptors.request.use((config) => {
-    const token = JSON.parse(localStorage.getItem("user"))?.access_token;
+    const user = JSON.parse(localStorage.getItem("user"));
 
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+    if (user && user.access_token) {
+        config.headers.Authorization = `Bearer ${user.access_token}`;
     }
 
     return config;

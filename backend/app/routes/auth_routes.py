@@ -59,20 +59,20 @@ def login(
 ):
 
     # Find user by email (username field carries email)
-    db_user = db.query(models.User).filter(
+    user = db.query(models.User).filter(
         models.User.email == form_data.username
     ).first()
 
-    if not db_user:
+    if not user:
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
     from app.utils import verify_password
 
-    if not verify_password(form_data.password, db_user.password):
+    if not verify_password(form_data.password, user.password):
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
     access_token = create_access_token(
-        data={"user_id": db_user.id}
+        data={"user_id": user.id}
     )
 
     return {
